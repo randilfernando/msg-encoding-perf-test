@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe"
+                   xmlns:xi="http://www.w3.org/2001/XInclude"
+                   package="baseline"
+                   id="1"
+                   version="0"
+                   semanticVersion="5.2"
+                   description="Example base schema which can be extended."
+                   byteOrder="littleEndian">
+    <types>
+        <composite name="messageHeader" description="Message identifiers and length of message root.">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="templateId" primitiveType="uint16"/>
+            <type name="schemaId" primitiveType="uint16"/>
+            <type name="version" primitiveType="uint16"/>
+        </composite>
+        <composite name="groupSizeEncoding" description="Repeating group dimensions.">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="numInGroup" primitiveType="uint16"/>
+        </composite>
+        <composite name="varStringEncoding" description="Variable length UTF-8 String.">
+            <type name="length" primitiveType="uint32" maxValue="1073741824"/>
+            <type name="varData" primitiveType="uint8" length="0" characterEncoding="UTF-8"/>
+        </composite>
+        <composite name="varAsciiEncoding" description="Variable length ASCII String.">
+            <type name="length" primitiveType="uint32" maxValue="1073741824"/>
+            <type name="varData" primitiveType="uint8" length="0" characterEncoding="ASCII"/>
+        </composite>
+        <composite name="varDataEncoding" description="Variable length binary blob.">
+            <type name="length" primitiveType="uint32" maxValue="1073741824"/>
+            <type name="varData" primitiveType="uint8" length="0"/>
+        </composite>
+        <enum name="Capacity" encodingType="uint8">
+            <validValue name="NONE">0</validValue>
+        </enum>
+        <enum name="Destination" encodingType="uint8">
+            <validValue name="ATS">0</validValue>
+        </enum>
+        <enum name="ExecInst" encodingType="uint8">
+            <validValue name="NONE">0</validValue>
+        </enum>
+        <enum name="ExecType" encodingType="uint8">
+            <validValue name="EXP">0</validValue>
+        </enum>
+        <enum name="OrderStatus" encodingType="uint8">
+            <validValue name="EXP">0</validValue>
+        </enum>
+        <enum name="OrderSide" encodingType="uint8">
+            <validValue name="BUY">0</validValue>
+        </enum>
+        <enum name="OrderType" encodingType="uint8">
+            <validValue name="MARKET">0</validValue>
+        </enum>
+        <enum name="TimeInForce" encodingType="uint8">
+            <validValue name="DAY">0</validValue>
+        </enum>
+        <type name="Qty" primitiveType="double"/>
+        <type name="Price" primitiveType="double"/>
+        <type name="TimeStamp" primitiveType="uint64"/>
+        <type name="CharArray26" primitiveType="char" length="26" characterEncoding="ASCII"/>
+        <type name="CharArray16" primitiveType="char" length="16" characterEncoding="ASCII"/>
+        <type name="CharArray10" primitiveType="char" length="10" characterEncoding="ASCII"/>
+        <type name="CharArray5" primitiveType="char" length="5" characterEncoding="ASCII"/>
+    </types>
+    <sbe:message name="ExecutionReport" id="1" description="Execution report message">
+        <field name="buyPower" id="1" type="double"/>
+        <field name="capacity" id="2" type="Capacity"/>
+        <field name="clOrderID" id="3" type="CharArray26"/>
+        <field name="cumQty" id="4" type="Qty"/>
+        <field name="destination" id="5" type="Destination"/>
+        <field name="execID" id="6" type="CharArray16"/>
+        <field name="execInst" id="7" type="ExecInst"/>
+        <field name="execLink" id="8" type="CharArray16"/>
+        <field name="execType" id="9" type="ExecType"/>
+        <field name="instID" id="10" type="uint16"/>
+        <field name="lastPrice" id="11" type="Price"/>
+        <field name="lastQty" id="12" type="Qty"/>
+        <field name="leavesQty" id="13" type="Qty"/>
+        <field name="orderLink" id="14" type="CharArray26"/>
+        <field name="orderQty" id="15" type="Qty"/>
+        <field name="orderStatus" id="16" type="OrderStatus"/>
+        <field name="orderType" id="17" type="OrderType"/>
+        <field name="partyID" id="18" type="CharArray10"/>
+        <field name="side" id="20" type="OrderSide"/>
+        <field name="timeInForce" id="22" type="TimeInForce"/>
+        <field name="transactTime" id="23" type="TimeStamp"/>
+        <data name="ruleText" id="19" type="varStringEncoding"/>
+    </sbe:message>
+</sbe:messageSchema>

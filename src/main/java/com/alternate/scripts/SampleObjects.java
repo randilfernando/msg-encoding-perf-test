@@ -12,12 +12,10 @@ public class SampleObjects {
     private static ObjectMapper objectMapper = new ObjectMapper();
 
     public static ExecutionReport executionReport;
-    public static ExecutionReportModified executionReportModified;
 
     static {
         try {
-            executionReport = objectMapper.readValue(new File("./exec_report.json"), ExecutionReport.class);
-            executionReportModified = objectMapper.readValue(new File("./exec_report_modified.json"), ExecutionReportModified.class);
+            executionReport = objectMapper.readValue(new File("./data/exec_report.json"), ExecutionReport.class);
         } catch (IOException e) {
             e.printStackTrace();
         }

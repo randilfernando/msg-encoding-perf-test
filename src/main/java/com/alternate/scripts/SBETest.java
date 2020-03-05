@@ -12,8 +12,6 @@ import baseline.OrderSide;
 import baseline.OrderStatus;
 import baseline.OrderType;
 import baseline.TimeInForce;
-import io.netty.buffer.ByteBuf;
-import io.protostuff.Schema;
 import org.HdrHistogram.Histogram;
 import org.agrona.concurrent.UnsafeBuffer;
 
@@ -58,12 +56,12 @@ public class SBETest {
 
         System.out.println("Message size: " + messageSize);
 
-        encodeHistogram.outputPercentileDistribution(new PrintStream(new FileOutputStream(new File("./sbe-encode.txt"))), 1.0);
-        decodeHistogram.outputPercentileDistribution(new PrintStream(new FileOutputStream(new File("./sbe-decode.txt"))), 1.0);
+        encodeHistogram.outputPercentileDistribution(new PrintStream(new FileOutputStream(new File("./results/sbe-encode.txt"))), 1.0);
+        decodeHistogram.outputPercentileDistribution(new PrintStream(new FileOutputStream(new File("./results/sbe-decode.txt"))), 1.0);
     }
 
     private static void doIteration() throws IOException {
-        ExecutionReportModified executionReport = SampleObjects.executionReportModified;
+        ExecutionReport executionReport = SampleObjects.executionReport;
 
         long encodeStart = System.nanoTime();
         ByteBuffer encoded = encode(executionReport);
@@ -75,7 +73,7 @@ public class SBETest {
         messageSize = encoded.limit();
 
         long decodeStart = System.nanoTime();
-        ExecutionReportModified decoded = decode(encoded);
+        ExecutionReport decoded = decode(encoded);
         long decodeStop = System.nanoTime();
         decodeHistogram.recordValue(decodeStop - decodeStart);
 
@@ -84,30 +82,30 @@ public class SBETest {
         }
     }
 
-    private static ByteBuffer encode(ExecutionReportModified executionReportModified) {
+    private static ByteBuffer encode(ExecutionReport executionReport) {
         EXECUTION_REPORT_ENCODER.wrapAndApplyHeader(directBuffer, 0, MESSAGE_HEADER_ENCODER)
-                .buyPower(executionReportModified.getBuyPower())
+                .buyPower(executionReport.getBuyPower())
                 .capacity(Capacity.NONE)
-                .clOrderID(executionReportModified.getClOrderID())
-                .cumQty(executionReportModified.getCumQty())
+                .clOrderID(executionReport.getClOrderID())
+                .cumQty(executionReport.getCumQty())
                 .destination(Destination.ATS)
-                .execID(executionReportModified.getExecID())
+                .execID(executionReport.getExecID())
                 .execInst(ExecInst.NONE)
-                .execLink(executionReportModified.getExecLink())
+                .execLink(executionReport.getExecLink())
                 .execType(ExecType.EXP)
-                .instID(executionReportModified.getInstID())
-                .lastPrice(executionReportModified.getLastPrice())
-                .lastQty(executionReportModified.getLastQty())
-                .leavesQty(executionReportModified.getLeavesQty())
-                .orderLink(executionReportModified.getOrderLink())
-                .orderQty(executionReportModified.getOrderQty())
+                .instID(executionReport.getInstID())
+                .lastPrice(executionReport.getLastPrice())
+                .lastQty(executionReport.getLastQty())
+                .leavesQty(executionReport.getLeavesQty())
+                .orderLink(executionReport.getOrderLink())
+                .orderQty(executionReport.getOrderQty())
                 .orderStatus(OrderStatus.EXP)
                 .orderType(OrderType.MARKET)
-                .partyID(executionReportModified.getPartyID())
-                .ruleText(executionReportModified.getRuleText())
+                .partyID(executionReport.getPartyID())
+                .ruleText(executionReport.getRuleText())
                 .side(OrderSide.BUY)
                 .timeInForce(TimeInForce.DAY)
-                .transactTime(executionReportModified.getTransactTime());
+                .transactTime(executionReport.getTransactTime());
 
         byteBuffer.limit(MESSAGE_HEADER_ENCODER.encodedLength() + EXECUTION_REPORT_ENCODER.encodedLength());
         byte[] arr = new byte[byteBuffer.remaining()];
@@ -116,7 +114,7 @@ public class SBETest {
         return ByteBuffer.wrap(arr);
     }
 
-    private static ExecutionReportModified decode(ByteBuffer buffer) throws IOException {
+    private static ExecutionReport decode(ByteBuffer buffer) throws IOException {
         int bufferOffset = 0;
         MESSAGE_HEADER_DECODER.wrap(new UnsafeBuffer(buffer), bufferOffset);
         int actingBlockLength = MESSAGE_HEADER_DECODER.blockLength();
@@ -126,7 +124,7 @@ public class SBETest {
 
         EXECUTION_REPORT_DECODER.wrap(directBuffer, bufferOffset, actingBlockLength, actingVersion);
 
-        return ExecutionReportModified.builder()
+        return ExecutionReport.builder()
                 .buyPower(EXECUTION_REPORT_DECODER.buyPower())
                 .capacity(EXECUTION_REPORT_DECODER.capacity().toString())
                 .clOrderID(EXECUTION_REPORT_DECODER.clOrderID())

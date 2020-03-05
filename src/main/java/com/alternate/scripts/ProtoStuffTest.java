@@ -44,12 +44,12 @@ public class ProtoStuffTest {
 
         System.out.println("Message size: " + messageSize);
 
-        encodeHistogram.outputPercentileDistribution(new PrintStream(new FileOutputStream(new File("./protostuff-encode.txt"))), 1.0);
-        decodeHistogram.outputPercentileDistribution(new PrintStream(new FileOutputStream(new File("./protostuff-decode.txt"))), 1.0);
+        encodeHistogram.outputPercentileDistribution(new PrintStream(new FileOutputStream(new File("./results/protostuff-encode.txt"))), 1.0);
+        decodeHistogram.outputPercentileDistribution(new PrintStream(new FileOutputStream(new File("./results/protostuff-decode.txt"))), 1.0);
     }
 
     private static void doIteration() throws IOException {
-        ExecutionReportModified executionReport = SampleObjects.executionReportModified;
+        ExecutionReport executionReport = SampleObjects.executionReport;
 
         long encodeStart = System.nanoTime();
         ByteBuffer encoded = encode(executionReport);
@@ -58,11 +58,11 @@ public class ProtoStuffTest {
 
         messageSize = encoded.limit();
 
-        Schema<ExecutionReportModified> schema = RuntimeSchema.getSchema(ExecutionReportModified.class);
+        Schema<ExecutionReport> schema = RuntimeSchema.getSchema(ExecutionReport.class);
 
         long decodeStart = System.nanoTime();
         ByteBuf byteBuf = Unpooled.wrappedBuffer(encoded);
-        ExecutionReportModified decoded = decode(schema, byteBuf);
+        ExecutionReport decoded = decode(schema, byteBuf);
         long decodeStop = System.nanoTime();
         decodeHistogram.recordValue(decodeStop - decodeStart);
 

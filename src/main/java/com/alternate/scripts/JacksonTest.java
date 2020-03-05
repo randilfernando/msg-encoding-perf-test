@@ -39,12 +39,12 @@ public class JacksonTest {
 
         System.out.println("Message size: " + messageSize);
 
-        encodeHistogram.outputPercentileDistribution(new PrintStream(new FileOutputStream(new File("./jackson-encode.txt"))), 1.0);
-        decodeHistogram.outputPercentileDistribution(new PrintStream(new FileOutputStream(new File("./jackson-decode.txt"))), 1.0);
+        encodeHistogram.outputPercentileDistribution(new PrintStream(new FileOutputStream(new File("./results/jackson-encode.txt"))), 1.0);
+        decodeHistogram.outputPercentileDistribution(new PrintStream(new FileOutputStream(new File("./results/jackson-decode.txt"))), 1.0);
     }
 
     private static void doIteration() throws JsonProcessingException {
-        ExecutionReportModified executionReport = SampleObjects.executionReportModified;
+        ExecutionReport executionReport = SampleObjects.executionReport;
 
         long encodeStart = System.nanoTime();
         String encoded = encode(executionReport);
@@ -54,7 +54,7 @@ public class JacksonTest {
         messageSize = encoded.getBytes(Charset.defaultCharset()).length;
 
         long decodeStart = System.nanoTime();
-        ExecutionReportModified decoded = decode(encoded, ExecutionReportModified.class);
+        ExecutionReport decoded = decode(encoded, ExecutionReport.class);
         long decodeStop = System.nanoTime();
         decodeHistogram.recordValue(decodeStop - decodeStart);
 
